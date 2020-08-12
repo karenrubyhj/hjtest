@@ -1,0 +1,475 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>test</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+	
+	    <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">  
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="http://mockjs.com/dist/mock.js"></script>
+	
+    <style>
+        html, body{
+            height: 1000px;
+            width: 100%;
+        }
+
+        .amap-icon img{
+            width: 25px;
+            height: 34px;
+        }
+		
+		
+		#map,#container{
+		
+		   position:absolute;
+		   margin-top:0px;
+		   height: 700px;
+            width: 100%;
+		
+		}
+
+
+       #li1{
+	   
+	   	position:absolute;
+		margin-top:700px;
+	    height:300px;
+		width: 100%; 
+	   
+	   
+	   }
+	   
+	   #li2{
+	      	position:relative;
+		margin-left:10px;
+	    height:300px;
+		width: 100%; 
+	   
+	   
+	   }
+
+
+
+	.table{
+	
+	    position:relative;
+		margin-top:0px;
+	    height:300px;
+		width: 100%; 
+		padding: 0; 
+	
+		
+		
+	    display:block;
+		
+		
+		overflow: auto;
+		
+
+		
+			
+	
+	}
+		
+	.input-card{
+	
+	  position:relative;
+	  margin-bottom:0px;
+	  
+	
+	
+	}
+		
+		
+	#pick{
+	
+        width: 35px;
+        height: 35px;
+        
+       
+        background: url(https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png) no-repeat;
+        background-color: white;
+        background-position: 3px;
+        
+        border: 0px;
+        outline: none;
+      }
+		
+		tbody{
+		
+		
+		
+		width:100%;
+		height:200px;
+		
+	
+		
+		
+		}
+		
+	
+		
+		th,td{
+		
+		   
+		width:20%
+		}
+		
+
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  
+  <ul class="nav nav-tabs">
+  <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">设施查询 <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">港口查询</a></li>
+          <li><a href="#">码头查询</a></li>
+		   <li class="divider"></li>
+          <li><a href="#">服务区查询</a></li>       
+          <li><a href="#">收费站查询</a></li>
+        </ul>
+  </li>
+  <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">设备查询 <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">交调仪查询</a></li>
+          <li><a href="#">气象站查询</a></li>
+		   <li class="divider"></li>
+          <li><a href="#">可变情报板查询</a></li>       
+          <li><a href="#">可变情报板历史</a></li>
+        </ul>
+  </li>
+  <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">车船查询 <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">客运船舶查询</a></li>
+          <li><a href="#">货运船舶查询</a></li>
+		
+        </ul>
+  </li>
+  
+  <li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">线路航线查询 <b class="caret"></b></a>
+        <ul class="dropdown-menu">
+          <li><a href="#">客运船舶线路</a></li>
+          <li><a href="#">货运船舶线路</a></li>
+	
+        </ul>
+  </li>
+</ul>
+
+</nav>
+
+
+<div id="map">
+
+<div id="container">
+
+
+</div>
+
+
+</div>
+
+
+<ul class="nav nav-tabs">
+
+<li class="active"  id='li1'>
+
+<a href="#">交调仪查询</a>
+ 
+<table class="table">
+   	
+
+   <thead>
+      <tr>
+	     <th>序号</th>
+         <th>港口名称</th>
+         <th>港口公司</th>
+		 <th>承载量</th>
+		 <th>gps</th>
+		 <th>操作</th>
+      </tr>
+   </thead>
+   
+
+
+   <tbody   id="test">
+    
+        
+   </tbody>
+
+   
+   
+</table>
+
+</li>
+
+<li  id='li2'><a href="#">气象站查询</a></li>
+
+</ul>
+
+
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key=710ea679529427ee8234fb5174186d82"></script>
+<script type="text/javascript">
+    var map = new AMap.Map('container', {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],
+        zoom: 13
+    });
+
+    map.clearMap();  // 清除地图覆盖物
+	
+  
+	window.markers = [];
+	
+	
+	var url = 'http://api.com'
+    var data = Mock.mock(url, {
+      "gps": [{
+	      'vid':1,
+	     'name':"宁波港",
+		 'maxsize':"1000",
+		 'company':'宁波港有限公司',
+        'icon': "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+        'position':[116.39418,39.91643]
+      },
+	  {
+	      'vid':2,
+	  	  'name':"营口港",
+		 'maxsize':"1000",
+		 'company':'营口港有限公司',
+        'icon': "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+        'position':[116.4156,39.91878]
+      },
+	  {
+	     'vid':3,
+	  	 'name':"天津港",
+		 'maxsize':"1000",
+		 'company':'天津港有限公司',
+        'icon': "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+        'position':[116.41172,39.90204]
+      },
+	  {
+	      'vid':4,
+	  	 'name':"秦皇岛港",
+		 'maxsize':"1000",
+		 'company':'秦皇岛港有限公司',
+        'icon': "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+        'position':[116.205467, 40.907761]
+      },
+	  {
+	     'vid':5,
+	  	 'name':"舟山港",
+		 'maxsize':"1000",
+		 'company':'舟山港有限公司',
+        'icon': "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+        'position':[116.205467, 39.007761]
+      },
+	  {
+	     'vid':6,
+	  	 'name':"山海关港",
+		 'maxsize':"1000",
+		 'company':'山海关港有限公司',
+        'icon': "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+        'position':[118.205467, 39.907761]
+      }]
+    });
+	
+    $.ajax({
+      url: url,
+      type: 'post',
+      contentType: 'text/plain',
+      dataType: 'json',
+      success: function(res) {
+        console.log(res);
+		
+		var loc=res.gps;
+		 var html = "";
+	
+		
+		 for (var i = 0; i < loc.length; i++) {
+		 
+		       
+		
+		  
+		  //  alert(loc[i].icon);
+		  //  alert(loc[i].position);
+		  
+		    var newgps = new Object();
+            newgps.icon = loc[i].icon;
+            newgps.position = loc[i].position;
+			
+			markers.push(newgps);
+			
+			
+			html +="<tr>"+"<td>"+(i+1)+"</td>"+"<td>"+loc[i].name+"</td>"+"<td>"+loc[i].company+"</td>"+"<td>"+loc[i].maxsize+"</td>"+"<td>"+loc[i].position+"</td>"+"<td>"+"<input type='button'  id='pick' onclick='pick(this)'/>"+"</td>"+"<td>"+"<input type='button'  id='drawline'  value='线路' onclick='drawline(this)'/>"+"</td>"+"</tr>";
+		
+		
+		//	html +="<tr>"+"<td>"+(i+1)+"</td>"+"<td>"+loc[i].name+"</td>"+"<td>"+loc[i].company+"</td>"+"<td>"+loc[i].maxsize+"</td>"+"<td>"+loc[i].position+"</td>"+"<td>"+"<div class='btn-toolbar'>"+"<div class='btn-group'>"+"<a class='btn' href='#'><i class='icon-map-marker'></i></a>"+"</div>"+"</div>"+"</td>"+"</tr>";
+			
+		  
+		 
+		 }
+		 
+		 
+		 
+		 // var jsonString = JSON.stringify(markers);
+
+         // alert(jsonString);
+		  
+		  
+		   $("#test").html(html); //在html页面id=test的标签里显示html内容
+		  
+		  
+		  
+		  
+		  
+    // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
+    markers.forEach(function(marker) {
+        new AMap.Marker({
+            map: map,
+            icon: marker.icon,
+            position: [marker.position[0], marker.position[1]],
+            offset: new AMap.Pixel(-13, -30)
+        });
+    });
+		  
+		  
+		  
+		  
+      var newCenter = map.setFitView();
+    
+		  
+		  
+		
+      }
+    });
+	
+  
+  
+    // 添加事件监听, 使地图自适应显示到合适的范围
+   // AMap.event.addDomListener(document.getElementById('setFitView'), 'click', function() {
+    
+   
+  //  });
+  
+  
+  function  pick(obj){
+  
+        var parentTr=obj.parentNode.parentNode;
+
+	    var tds = parentTr.getElementsByTagName('td');
+  
+        var thisgps=tds[4].innerHTML;
+		
+		
+		var str=thisgps.split(',');
+		
+				
+	    // alert(str);
+		
+		
+		/*
+		var marker = new AMap.Marker({
+		
+        icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+        position: str
+		
+       });
+ 
+  		  marker.setLabel({
+			offset: new AMap.Pixel(-10, -20),  //设置文本标注偏移量
+			content: "<div class='info'>"+thisgps+"</div>", //设置文本标注内容
+			direction: 'right' //设置文本标注方位
+		});
+		
+		*/
+		
+		// 点标记显示内容，HTML要素字符串
+		
+		
+		
+    var markerContent ="<div style='border:2px solid'>" +"最大容量:"+tds[3].innerHTML+"<p>"+"gps:"+thisgps +"</div>";
+
+    var marker = new AMap.Marker({
+	    		
+        position: str,
+       
+        content: markerContent,
+        // 以 icon 的 [center bottom] 为原点
+		
+		
+        offset: new AMap.Pixel(0, -50)
+    });
+		
+	
+		
+        map.add(marker);
+		   
+		map.setFitView();
+  
+  }
+  
+  
+  
+  
+  function  drawline(obj){
+  
+  
+  var path = [
+        [116.4156,39.91878],
+        [116.39235,39.91966],
+        [116.4036,39.89775],
+        [116.40952,39.91254],
+		[116.4156,39.91878],
+    ];
+
+    var polyline = new AMap.Polyline({
+        path: path,
+        isOutline: true,
+        outlineColor: '#ffeeff',
+        borderWeight: 3,
+        strokeColor: "#3366FF", 
+        strokeOpacity: 1,
+        strokeWeight: 6,
+        // 折线样式还支持 'dashed'
+        strokeStyle: "solid",
+        // strokeStyle是dashed时有效
+        strokeDasharray: [10, 5],
+        lineJoin: 'round',
+        lineCap: 'round',
+        zIndex: 50,
+    })
+
+    polyline.setMap(map)
+    // 缩放地图到合适的视野级别
+    map.setFitView([ polyline ])
+
+  
+  
+  
+  
+  }
+  
+  
+  
+</script>
+
+
+
+
+
+
+</body>
+</html>
